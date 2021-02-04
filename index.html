@@ -4,10 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-
-
     <title>Weather Dashboard</title>
 </head>
 
@@ -17,77 +16,113 @@
             <h1>Weather Dashboard</h1>
         </li>
     </header>
-
-    <div class="row">
-        <div class="col-4">
-            <div>
-                <label for="searchInput" class="content"><b>Search for a City:</label>
-                <div class="input-group content">
+    <div class="container">
+        <div class="row">
+            <div class="col-4">
+                <label for="searchInput"><b>Search for a City:</label>
+                <div class="input-group">
                     <input id="searchInput" class="form-control" placeholder="City">
                     <button onClick="input(event)" class="btn btn-primary">Search</button>
                 </div>
-                <div id="saved" class="d-grid gap-2"></div>
-                <div class="cityList">
-                    <div id="text" class="col-8">
+            </div>
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h2 id="userCity" class="card-title"></h2>
+                        <p id="temp" class="card-text"></p>
+                        <p id="hum" class="card-text"></p>
+                        <p id="wind" class="card-text"></p>
                     </div>
                 </div>
             </div>
-            <script>
-                let cityData
-                // let searchInput = localStorage.getItem()
-                let x = 0 
-                let history = Array()
+        </div>
+        <div class="row"></div>
+            <div id="saved" class="d-grid gap-2 col-4"></div>
+            <div class="col-8">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                      <h5 class="card-title">Card title</h5>
+                      <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                      <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                      <a href="#" class="card-link">Card link</a>
+                      <a href="#" class="card-link">Another link</a>
+                    </div>
+                </div>
+            </div>
 
-                function input(event){
-                    event.preventDefault()
-                    // var id = Number(event.target.id)
-                    // console.log(id)
-                    // var value = document.querySelector("#searchInput").value
-                    // console.log(value)
-                    history[x] = document.querySelector("#searchInput").value; x++;
-                    document.querySelector("#searchInput").value=""
-                    console.log(x)
-                    for (i=0; i<history.length; i++){
-                        document.querySelector("#saved").innerHTML += `<button class="btn btn-primary">Button</button>`
+    </div>
+    </div>
 
-                    }
+    <script>
+        let cityData
+        let x = 0
+        let history = Array()
+        var name = document.querySelector('#name');
+        var temp = document.querySelector('#temp');
+        var hum = document.querySelector('#hum');
+        var wind = document.querySelector('#wind');
+        var today = new Date()
+        var dd = today.getDate()
+        var mm = today.getMonth()
+        var yyyy = today.getFullYear()
+        today = mm + '/' + dd + '/' + yyyy
+
+        function input(event) {
+            event.preventDefault()
+            let cityName = document.querySelector("#searchInput").value
+            history[x] = document.querySelector("#searchInput").value; x++;
+            document.querySelector("#searchInput").value = ""
+            console.log(x)
+            document.querySelector("#saved").innerHTML = ""
+            for (i = 0; i < history.length; i++) {
+                if (cityName == "") {
+                    return
                 }
+                else
+                    document.querySelector("#saved").innerHTML += `<button onClick="saved(event, '${history[i]}')" class="btn btn-outline-primary">${history[i]}</button>`
+            }
+            weather(cityName)
+        }
+        function saved(event, cityName) {
+            event.preventDefault()
+            console.log(cityName)
+            weather(cityName)
+        }
 
+        async function weather(cityName) {
+            let fetchUrl = "http://api.openweathermap.org/data/2.5/weather?appid=327fecee9f6fad805256a047aec1915c&q=" + cityName
 
-                // function
+            console.log(`..fetching from ${fetchUrl}`)
+            cityData = await fetch(fetchUrl).then(r => r.json())
+            .then(data => {
+                var nameValue = data['name']
+                var img = data['weather'][0]['icon']
+                var tempValue = data['main']['temp']
+                var humValue = data['main']['humidity']
+                var windValue = data['wind']['speed']
 
+                userCity.innerHTML = `${nameValue} (${today}) <img src='http://openweathermap.org/img/wn/${img}@2x.png'>`;
+                temp.innerHTML = `Temperature: ${tempValue} F`;
+                hum.innerHTML = `Humidity: ${humValue}%`;
+                wind.innerHTML = `Wind Speed: ${windValue} MPH`;
+            })
+            // futureWeather(cityName)
+        }
 
+        // async function futureWeather(cityName){
+        //     let fetchForecastUrl = "http://api.openweathermap.org/data/2.5/forecast?appid=327fecee9f6fad805256a047aec1915c&q=" + cityName
 
+        //     cityForecastData = await fetch(fetchUrl).then(r => r.json())
+        //     .then(data => {
+        //     })
 
-                async function weather(city) {
-                    const fetchUrl = "http://api.openweathermap.org/data/2.5/weather?appid=327fecee9f6fad805256a047aec1915c&q=" + city
-                    
-                    console.log(`..fetching from ${fetchUrl}`)
-                    cityData = await fetch(fetchUrl).then(r => r.json())
-                    console.log(`.fetched city data;`, cityData)
-                    console.log(`..showing city data`)
+        // }
 
-                    // let dataLength = cityData.list.length
-                    // for (i = 0; i < dataLength; i++) {
-                    //     let url = cityData.list[i].weather
-                    //     console.log(`list: ${url}`)
-                    //     document.querySelector("#cityList").innerHTML += `
-                    //     <div class="card" style="width: 18rem;">
-                    //         <img src="${url}" class="card-img-top">
-                    //         <div class="card-body">
-                    //             <h5 class="card-title">Card title</h5>
-                    //         </div>
-                    //     </div>
-                    //         `
-                    // }
-
-
-                }
-                weather("toronto")
-            </script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
-                integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
-                crossorigin="anonymous"></script>
+        weather("toronto")
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>
