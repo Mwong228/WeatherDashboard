@@ -42,7 +42,7 @@ function saved(event, cityName) {
 }
 
 async function weather(cityName) {
-    let fetchUrl = "http://api.openweathermap.org/data/2.5/weather?appid=327fecee9f6fad805256a047aec1915c&q=" + cityName
+    let fetchUrl = "https://api.openweathermap.org/data/2.5/weather?appid=327fecee9f6fad805256a047aec1915c&q=" + cityName
 
     console.log(`..fetching from ${fetchUrl}`)
     cityData = await fetch(fetchUrl).then(r => r.json())
@@ -60,7 +60,7 @@ async function weather(cityName) {
 }
 
 async function futureWeather(cityName) {
-    let fetchForecastUrl = "http://api.openweathermap.org/data/2.5/forecast?appid=327fecee9f6fad805256a047aec1915c&q=" + cityName
+    let fetchForecastUrl = "https://api.openweathermap.org/data/2.5/forecast?appid=327fecee9f6fad805256a047aec1915c&q=" + cityName
     forecasted.innerHTML = ""
 
     cityForecastData = await fetch(fetchForecastUrl).then(r => r.json())
